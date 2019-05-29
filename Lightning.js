@@ -306,7 +306,7 @@ initialize().then(function(data) {
 //     log(strikeArrToPush);
   //   log(allStationStrikeData);
   // }
-
+//
 });
 };
 new CronJob('*/1 * * * * ', Lightning, null, true,'America/New_York');
