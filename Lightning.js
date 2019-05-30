@@ -6,8 +6,11 @@ var url = "https://wwlln.net/new/map/data/current.json";
 let log = console.log
 //Timer
 var CronJob = require('cron').CronJob;
+var CronTimer
 //Size of station range ring in meters
 var RangeRing = 32187;
+//If shit breaks you might want to look at this package as suspect
+// console.log(geolib);
 
 function Lightning(){
   var singleStrikeEvent
@@ -85,7 +88,7 @@ initialize().then(function(data) {
 //Parsing through each item to determine if strike was at any assigned station
   arr.forEach((item) => {
 //Strike is plotted with a range ring around the station
-      singleStrikeEvent = geolib.isPointInCircle(
+      singleStrikeEvent = geolib.isPointWithinRadius(
 //location of strike
           {latitude: item.lat, longitude: item.long},
 //location of station
@@ -100,7 +103,7 @@ initialize().then(function(data) {
            {latitude: locations[0].latitude, longitude: locations[0].longitude}
          );
 //The distance of strike from the station is calculated
-         distance = geolib.getDistance(
+         distance = geolib.getPreciseDistance(
            {latitude: item.lat, longitude: item.long},
            {latitude: locations[0].latitude, longitude: locations[0].longitude}
          );
@@ -122,7 +125,7 @@ initialize().then(function(data) {
 //All calculations are the same as above
     //Mayport
     arr.forEach((item) => {
-        singleStrikeEvent = geolib.isPointInCircle(
+        singleStrikeEvent = geolib.isPointWithinRadius(
             {latitude: item.lat, longitude: item.long},
             {latitude: locations[1].latitude, longitude: locations[1].longitude},
             RangeRing
@@ -132,7 +135,7 @@ initialize().then(function(data) {
              {latitude: item.lat, longitude: item.long},
              {latitude: locations[1].latitude, longitude: locations[1].longitude}
            );
-           distance = geolib.getDistance(
+           distance = geolib.getPreciseDistance(
              {latitude: item.lat, longitude: item.long},
              {latitude: locations[1].latitude, longitude: locations[1].longitude}
            );
@@ -152,7 +155,7 @@ initialize().then(function(data) {
 
       //Keywest
       arr.forEach((item) => {
-          singleStrikeEvent = geolib.isPointInCircle(
+          singleStrikeEvent = geolib.isPointWithinRadius(
               {latitude: item.lat, longitude: item.long},
               {latitude: locations[2].latitude, longitude: locations[2].longitude},
               RangeRing
@@ -162,7 +165,7 @@ initialize().then(function(data) {
                {latitude: item.lat, longitude: item.long},
                {latitude: locations[2].latitude, longitude: locations[2].longitude}
              );
-             distance = geolib.getDistance(
+             distance = geolib.getPreciseDistance(
                {latitude: item.lat, longitude: item.long},
                {latitude: locations[2].latitude, longitude: locations[2].longitude}
              );
@@ -182,7 +185,7 @@ initialize().then(function(data) {
 
         //Albany
         arr.forEach((item) => {
-            singleStrikeEvent = geolib.isPointInCircle(
+            singleStrikeEvent = geolib.isPointWithinRadius(
                 {latitude: item.lat, longitude: item.long},
                 {latitude: locations[3].latitude, longitude: locations[3].longitude},
                 RangeRing
@@ -192,7 +195,7 @@ initialize().then(function(data) {
                  {latitude: item.lat, longitude: item.long},
                  {latitude: locations[3].latitude, longitude: locations[3].longitude}
                );
-               distance = geolib.getDistance(
+               distance = geolib.getPreciseDistance(
                  {latitude: item.lat, longitude: item.long},
                  {latitude: locations[3].latitude, longitude: locations[3].longitude}
                );
@@ -212,7 +215,7 @@ initialize().then(function(data) {
 
           //Kingsbay
           arr.forEach((item) => {
-              singleStrikeEvent = geolib.isPointInCircle(
+              singleStrikeEvent = geolib.isPointWithinRadius(
                   {latitude: item.lat, longitude: item.long},
                   {latitude: locations[4].latitude, longitude: locations[4].longitude},
                   RangeRing
@@ -222,7 +225,7 @@ initialize().then(function(data) {
                    {latitude: item.lat, longitude: item.long},
                    {latitude: locations[4].latitude, longitude: locations[4].longitude}
                  );
-                 distance = geolib.getDistance(
+                 distance = geolib.getPreciseDistance(
                    {latitude: item.lat, longitude: item.long},
                    {latitude: locations[4].latitude, longitude: locations[4].longitude}
                  );
@@ -246,6 +249,7 @@ initialize().then(function(data) {
       "Type": "Lightning"
     }
     strikeEventObject.push(strikeArrToPush)
+    let CronTimer = '*/1 * * * * '
   }
   if(mayportStrikeCount > 0){
     var strikeArrToPush = {
@@ -254,6 +258,7 @@ initialize().then(function(data) {
       "Type": "Lightning"
     }
     strikeEventObject.push(strikeArrToPush)
+    let CronTimer = '*/1 * * * * '
   }
   if(keywestStrikeCount > 0){
     var strikeArrToPush = {
@@ -262,6 +267,7 @@ initialize().then(function(data) {
       "Type": "Lightning"
     }
     strikeEventObject.push(strikeArrToPush)
+    let CronTimer = '*/1 * * * * '
   }
   if(albanyStrikeCount > 0){
     var strikeArrToPush = {
@@ -270,6 +276,7 @@ initialize().then(function(data) {
       "Type": "Lightning"
     }
     strikeEventObject.push(strikeArrToPush)
+    let CronTimer = '*/1 * * * * '
   }
   if(kingsbayStrikeCount > 0){
     var strikeArrToPush = {
@@ -278,6 +285,7 @@ initialize().then(function(data) {
       "Type": "Lightning"
     }
     strikeEventObject.push(strikeArrToPush)
+    let CronTimer = '*/1 * * * * '
   }
   if(sd === 0) {
     var strikeArrToPush = {
@@ -286,9 +294,11 @@ initialize().then(function(data) {
     "Type": "Lightning"
   }
   strikeEventObject.push(strikeArrToPush)
+  let CronTimer = '*/5 * * * * '
 }
-    log(sd);
+    log(sd, "strikes detected");
     log(strikeEventObject);
+    log(CronTimer);
 //     log(sd, "strikes detected");
 //     log(jacksonvilleStrikeCount, "strikes detected near Jacksonville");
 //     log(mayportStrikeCount, "strikes detected near Mayport");
@@ -309,4 +319,4 @@ initialize().then(function(data) {
 //
 });
 };
-new CronJob('*/1 * * * * ', Lightning, null, true,'America/New_York');
+new CronJob(CronTimer, Lightning, null, true,'America/New_York');
